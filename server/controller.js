@@ -27,8 +27,8 @@ module.exports = {
             CREATE TABLE cities(
                 city_id SERIAL PRIMARY KEY,
                 name VARCHAR,
-                rating INT,
-                country_id INT
+                rating INTEGER,
+                country_id INTEGER
             );
 
             insert into countries (name)
@@ -243,6 +243,57 @@ module.exports = {
         })
         .catch((err) => {
             console.log(err);
+        })
+    },
+
+    createCity: (req, res) => {
+        const { name, rating, countryId } = req.body;
+
+        sequelize.query(`
+            INSERT INTO cities (name, rating, country_id)
+            VALUES ('${name}', ${rating}, ${countryId});
+        `)
+        .then((dbRes) => {
+            res.status(200).send(dbRes[0]);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    },
+
+    getCities: (req, res) => {
+
+        sequelize.query(`
+         SELECT 
+                cities.city_id,
+                cities.name AS city,
+                cities.rating,
+                countries.country_id,
+                countries.name AS country
+            FROM cities 
+            JOIN countries 
+            ON cities.country_id = countries.country_id
+        `)
+        .then((dbRes) => {
+            res.status(200).send(dbRes[0]);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    },
+
+    deleteCity: (req, res) => {
+        const {cityId} = req.params
+            
+        sequelize.query(`
+            DELETE FROM cities
+            WHERE city_id = ${cityId};
+     `)
+        .then((dbRes) => {
+        res.status(200).send(dbRes[0]);
+        })
+        .catch((err) => {
+        console.log(err);
         })
     }
 }
